@@ -12,7 +12,30 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d neri"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - neri-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: neri-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@neri.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - neri-network
 
   backend:
     build:
@@ -30,8 +53,16 @@ services:
       - JWT_SECRET=supersecretkey
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - neri-network
 
   frontend:
     build:
@@ -41,8 +72,20 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - neri-network
+
+networks:
+  neri-network:
+    driver: bridge
 
 volumes:
   pgdata:

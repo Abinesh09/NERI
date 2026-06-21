@@ -1,28 +1,49 @@
-# NERI (நெறி)
+# NERI (நெறி) - AI-Powered Learning Platform
 
-NERI is a full-stack AI-powered learning and exam preparation platform. "NERI" translates to Path, Guidance, or Direction.
-The platform allows users to take dynamically generated tests, chat with an AI for doubt clearance, and track their analytics.
+NERI is a premium, full-stack learning and exam preparation platform. It allows users to upload previous year question papers, generates interactive mock tests using Gemini AI, and provides detailed analytics on their performance.
 
 ## Tech Stack
-* **Frontend:** React + TypeScript, Vite, Tailwind CSS
-* **Backend:** Golang (Fiber framework)
-* **Database:** PostgreSQL with GORM
-* **Authentication:** JWT & bcrypt
-* **AI Provider:** Google Gemini API
-* **Deployment:** Docker & Docker Compose
+- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+- **Backend**: Golang (Fiber), GORM
+- **Database**: PostgreSQL
+- **AI**: Google Gemini API
+- **Infrastructure**: Docker, Docker Compose
 
-## Features Implemented So Far
-- **Project Scaffold:** Complete setup of the `frontend/` (React+Vite) and `backend/` (Golang Fiber) directories.
-- **Dockerization:** Configured `docker-compose.yml` to run PostgreSQL, the Go backend, and the React frontend. Created multi-stage Dockerfiles.
-- **Database Architecture:** Created GORM models for users, tests, questions, test attempts, scheduled tests, user answers, and chat history.
-- **Authentication:** Built register, login, logout, and forgot-password API endpoints with secure JWT cookie handling and password hashing.
-- **Security & Best Practices:** Configured CORS, structured the code with a clean separation of concerns (controllers, models, routes, database).
+## 🚀 Quick Start (One-Command Setup)
 
-## Running the Application Locally
-Make sure you have Docker installed on your machine.
-1. Create a `.env` file in the root directory (or use your system environment variables) and configure your `GEMINI_API_KEY`.
-2. Run the application:
-   ```bash
-   docker-compose up --build
-   ```
-3. The frontend will be available on `http://localhost:3000` and the backend on `http://localhost:8080`.
+The entire platform is fully Dockerized for a seamless developer experience.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running.
+- A Gemini API Key from Google AI Studio.
+
+### 1. Configure Environment
+A `.env` file is required in the root directory. If you haven't already, create one and add your Gemini API Key:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+### 2. Start the Platform
+Run the following command in the root directory:
+```bash
+docker compose up --build
+```
+*This single command will:*
+- Build the multi-stage Go Backend.
+- Build the multi-stage React Frontend.
+- Boot up PostgreSQL, run health checks, and automatically run database migrations on startup.
+- Boot up pgAdmin.
+
+### 3. Access the Services
+Once the terminal logs show that all containers are healthy, you can immediately access the platform:
+
+- **Frontend App**: [http://localhost:3000](http://localhost:3000)
+- **Backend API**: [http://localhost:8080](http://localhost:8080)
+- **pgAdmin (Database GUI)**: [http://localhost:5050](http://localhost:5050)
+  - *Email*: `admin@neri.local`
+  - *Password*: `admin`
+
+## Development Notes
+- **Auto-migrations**: The Go backend uses GORM's `AutoMigrate` function. Any changes to the `models/` directory will automatically map to the PostgreSQL tables on startup.
+- **Frontend Routing**: The frontend is served via an NGINX container configured to fallback to `index.html` for React Router.
+- **Data Persistence**: The PostgreSQL database uses a Docker volume (`pgdata`), ensuring your user accounts and tests persist across container restarts.

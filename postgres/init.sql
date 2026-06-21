@@ -1,6 +1,6 @@
--- Init script for NERI database
--- We will use GORM's AutoMigrate feature in the backend to create tables, 
--- but we can put any manual SQL setup here if necessary.
+-- init.sql
+-- The database 'neri' is automatically created by the POSTGRES_DB environment variable in docker-compose.
+-- This file is executed after the database is created.
+-- GORM auto-migration will handle table creation in the Go application, so this can remain mostly empty or be used for extensions.
 
--- Enable pgcrypto for UUID generation if needed
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
