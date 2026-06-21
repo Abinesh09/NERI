@@ -16,4 +16,7 @@ func Setup(app *fiber.App) {
 
 	user := api.Group("/user")
 	user.Get("/", controllers.User) // Gets current authenticated user
+
+	tests := api.Group("/tests")
+	tests.Post("/upload", controllers.UploadTest)
 }

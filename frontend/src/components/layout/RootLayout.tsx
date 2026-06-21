@@ -10,6 +10,7 @@ import {
   Moon,
   Sun,
   Menu,
+  UploadCloud,
 } from "lucide-react"
 import { useTheme } from "../theme-provider"
 import { useState } from "react"
@@ -23,6 +24,7 @@ export default function RootLayout() {
   const navItems = [
     { name: "Chat", path: "/", icon: MessageSquare },
     { name: "Tests", path: "/tests", icon: FileText },
+    { name: "Upload Test", path: "/upload", icon: UploadCloud },
     { name: "Analytics", path: "/analytics", icon: BarChart2 },
     { name: "Profile", path: "/profile", icon: User },
   ]

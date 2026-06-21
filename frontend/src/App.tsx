@@ -4,11 +4,13 @@ import RootLayout from "./components/layout/RootLayout"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 
+import UploadTest from "./pages/UploadTest"
+import Profile from "./pages/Profile"
+
 // Placeholder pages for routing
 const Chat = () => <div className="p-8">Chat Interface Content</div>
 const Tests = () => <div className="p-8">Test Engine Interface Content</div>
 const Analytics = () => <div className="p-8">Analytics Dashboard Content</div>
-const Profile = () => <div className="p-8">Profile Page Content</div>
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           <Route path="/" element={<RootLayout />}>
             <Route index element={<Chat />} />
             <Route path="tests" element={<Tests />} />
+            <Route path="upload" element={<UploadTest />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="profile" element={<Profile />} />
           </Route>
