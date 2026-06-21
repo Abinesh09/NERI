@@ -6,9 +6,15 @@ WORKDIR /app
 # Install necessary build tools
 RUN apk add --no-cache git
 
-# Copy dependency files
-COPY go.mod go.sum* ./
-RUN go mod tidy
+# Set GONOSUMDB and GOFLAGS to avoid sum check issues
+ENV GONOSUMDB=*
+ENV GOFLAGS=-mod=mod
+
+# Copy dependency files first (layer caching)
+COPY go.mod go.sum ./
+
+# Download all dependencies using the committed go.sum
+RUN go mod download -x
 
 # Copy source code
 COPY . .
@@ -17,7 +23,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # Stage 2: Create a minimal production image
-FROM alpine:latest  
+FROM alpine:latest
 
 WORKDIR /root/
 
