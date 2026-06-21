@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/user/neri/database"
 	"github.com/user/neri/routes"
+	"github.com/user/neri/utils"
 )
 
 func main() {
@@ -16,6 +17,9 @@ func main() {
 	if err != nil {
 		log.Println("No .env file found or error loading it, relying on system env vars")
 	}
+
+	// Initialize Gemini
+	utils.InitGemini()
 
 	// Connect to database
 	database.ConnectDb()
