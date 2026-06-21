@@ -16,7 +16,9 @@ type User struct {
 type Test struct {
 	ID        uint       `gorm:"primaryKey" json:"id"`
 	Title     string     `json:"title"`
-	UserID    uint       `json:"user_id"` // User who requested it
+	UserID    uint       `json:"user_id"`  // User who requested it
+	Duration  int        `json:"duration"` // in minutes
+	Source    string     `json:"source"`
 	Questions []Question `gorm:"foreignKey:TestID" json:"questions"`
 	CreatedAt time.Time  `json:"created_at"`
 }
@@ -53,14 +55,25 @@ type ScheduledTest struct {
 	ID            uint      `gorm:"primaryKey" json:"id"`
 	UserID        uint      `json:"user_id"`
 	TestID        uint      `json:"test_id"`
+	Test          Test      `gorm:"foreignKey:TestID" json:"test"`
 	ScheduledTime time.Time `json:"scheduled_time"`
 	Status        string    `json:"status"` // PENDING, COMPLETED, MISSED
 }
 
+type ChatConversation struct {
+	ID        uint          `gorm:"primaryKey" json:"id"`
+	UserID    uint          `json:"user_id"`
+	Title     string        `json:"title"`
+	Messages  []ChatHistory `gorm:"foreignKey:ConversationID" json:"messages"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
 type ChatHistory struct {
-	ID        uint      `gorm:"primaryKey" json:"id"`
-	UserID    uint      `json:"user_id"`
-	Message   string    `json:"message"`
-	Role      string    `json:"role"` // "user" or "model"
-	CreatedAt time.Time `json:"created_at"`
+	ID             uint      `gorm:"primaryKey" json:"id"`
+	UserID         uint      `json:"user_id"`
+	ConversationID uint      `json:"conversation_id"`
+	Message        string    `json:"message"`
+	Role           string    `json:"role"` // "user" or "model"
+	CreatedAt      time.Time `json:"created_at"`
 }

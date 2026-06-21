@@ -72,6 +72,50 @@ Return ONLY valid JSON in the following structure without any markdown formattin
 	return "", fmt.Errorf("invalid response format from Gemini")
 }
 
+func GenerateTestJSONFromFile(prompt string, data []byte, mimeType string) (string, error) {
+	if client == nil {
+		return "", fmt.Errorf("Gemini client not initialized")
+	}
+
+	ctx := context.Background()
+	model := client.GenerativeModel("gemini-1.5-flash")
+	model.ResponseMIMEType = "application/json"
+
+	systemPrompt := `You are an expert test creator. Extract questions from the uploaded paper and return ONLY valid JSON:
+{
+  "title": "Title of the test",
+  "duration": 45,
+  "questions": [
+    {
+      "question": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer": "Option B",
+      "explanation": "Detailed explanation of why this answer is correct."
+    }
+  ]
+}`
+
+	resp, err := model.GenerateContent(
+		ctx,
+		genai.Text(systemPrompt+"\n\n"+prompt),
+		genai.Blob{MIMEType: mimeType, Data: data},
+	)
+	if err != nil {
+		return "", err
+	}
+
+	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
+		return "", fmt.Errorf("no response from Gemini")
+	}
+
+	part := resp.Candidates[0].Content.Parts[0]
+	if text, ok := part.(genai.Text); ok {
+		return string(text), nil
+	}
+
+	return "", fmt.Errorf("invalid response format from Gemini")
+}
+
 // GenerateChatResponse sends a message to the model for conversational chat
 func GenerateChatResponse(prompt string) (string, error) {
 	if client == nil {

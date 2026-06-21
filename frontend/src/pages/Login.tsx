@@ -1,18 +1,38 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowRight, Mail, Lock } from "lucide-react"
+import { apiRequest } from "@/lib/api"
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 1500) // Mock API call
+    const form = new FormData(e.currentTarget)
+    try {
+      const response = await apiRequest<{ token: string }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email: form.get("email"),
+          password: form.get("password"),
+        }),
+      })
+      localStorage.setItem("neri_token", response.token)
+      navigate("/")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to sign in")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -46,8 +66,9 @@ export default function Login() {
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="email" 
+                    name="email"
                     type="email" 
-                    placeholder="m@example.com" 
+                    placeholder="Email address"
                     className="pl-10 h-11 bg-card/50" 
                     required 
                   />
@@ -65,6 +86,7 @@ export default function Login() {
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="password" 
+                    name="password"
                     type="password" 
                     className="pl-10 h-11 bg-card/50" 
                     required 
@@ -72,6 +94,7 @@ export default function Login() {
                 </div>
               </div>
             </div>
+            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? (

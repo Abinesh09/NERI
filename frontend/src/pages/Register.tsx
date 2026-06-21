@@ -1,14 +1,17 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowRight, Mail, Lock, User as UserIcon, Check } from "lucide-react"
+import { apiRequest } from "@/lib/api"
 
 export default function Register() {
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
 
   // Simple password strength calculation
   const strength = Math.min(
@@ -22,10 +25,26 @@ export default function Register() {
   const strengthColor =
     strength < 50 ? "bg-destructive" : strength < 100 ? "bg-secondary" : "bg-green-500"
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 1500)
+    const form = new FormData(e.currentTarget)
+    try {
+      await apiRequest("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.get("name"),
+          email: form.get("email"),
+          password: form.get("password"),
+        }),
+      })
+      navigate("/login")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to create account")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -93,8 +112,9 @@ export default function Register() {
                   <UserIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="name" 
+                    name="name"
                     type="text" 
-                    placeholder="John Doe" 
+                    placeholder="Full name" 
                     className="pl-10 h-11 bg-card/50" 
                     required 
                   />
@@ -107,8 +127,9 @@ export default function Register() {
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="email" 
+                    name="email"
                     type="email" 
-                    placeholder="m@example.com" 
+                    placeholder="Email address" 
                     className="pl-10 h-11 bg-card/50" 
                     required 
                   />
@@ -121,6 +142,7 @@ export default function Register() {
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="password" 
+                    name="password"
                     type="password" 
                     className="pl-10 h-11 bg-card/50" 
                     required 
@@ -153,6 +175,7 @@ export default function Register() {
                 </AnimatePresence>
               </div>
             </div>
+            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? (

@@ -18,5 +18,20 @@ func Setup(app *fiber.App) {
 	user.Get("/", controllers.User) // Gets current authenticated user
 
 	tests := api.Group("/tests")
+	tests.Get("/", controllers.ListTests)
+	tests.Get("/:id", controllers.GetTest)
+	tests.Post("/", controllers.UploadTest)
 	tests.Post("/upload", controllers.UploadTest)
+	tests.Post("/attempts", controllers.SubmitAttempt)
+
+	api.Get("/profile", controllers.GetProfile)
+	api.Get("/history", controllers.GetHistory)
+	api.Get("/scheduled-tests", controllers.GetScheduledTests)
+	api.Get("/analytics", controllers.GetAnalytics)
+
+	chat := api.Group("/chat")
+	chat.Get("/conversations", controllers.ListConversations)
+	chat.Post("/conversations", controllers.CreateConversation)
+	chat.Delete("/conversations/:id", controllers.DeleteConversation)
+	chat.Post("/conversations/:id/messages", controllers.SendChatMessage)
 }

@@ -42,6 +42,7 @@ func ConnectDb() {
 		&models.TestAttempt{},
 		&models.UserAnswer{},
 		&models.ScheduledTest{},
+		&models.ChatConversation{},
 		&models.ChatHistory{},
 	)
 	if err != nil {

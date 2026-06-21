@@ -6,11 +6,9 @@ import Register from "./pages/Register"
 
 import UploadTest from "./pages/UploadTest"
 import Profile from "./pages/Profile"
-
-// Placeholder pages for routing
-const Chat = () => <div className="p-8">Chat Interface Content</div>
-const Tests = () => <div className="p-8">Test Engine Interface Content</div>
-const Analytics = () => <div className="p-8">Analytics Dashboard Content</div>
+import Chat from "./pages/Chat"
+import Tests from "./pages/Tests"
+import Analytics from "./pages/Analytics"
 
 function App() {
   return (
@@ -25,6 +23,7 @@ function App() {
           <Route path="/" element={<RootLayout />}>
             <Route index element={<Chat />} />
             <Route path="tests" element={<Tests />} />
+            <Route path="tests/:id" element={<Tests />} />
             <Route path="upload" element={<UploadTest />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="profile" element={<Profile />} />

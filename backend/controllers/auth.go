@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +17,16 @@ func Register(c *fiber.Ctx) error {
 		return err
 	}
 
+	if data["name"] == "" || data["email"] == "" || data["password"] == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "name, email and password are required"})
+	}
+
+	var existing models.User
+	database.DB.Where("email = ?", data["email"]).First(&existing)
+	if existing.ID != 0 {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"message": "email already registered"})
+	}
+
 	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
 
 	user := models.User{
@@ -26,7 +35,9 @@ func Register(c *fiber.Ctx) error {
 		Password: string(password),
 	}
 
-	database.DB.Create(&user)
+	if err := database.DB.Create(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "could not create account"})
+	}
 
 	return c.JSON(user)
 }
@@ -54,7 +65,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := utils.GenerateToken(strconv.Itoa(int(user.ID)))
+	token, err := utils.GenerateToken(user.ID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "could not login",
@@ -73,21 +84,18 @@ func Login(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success",
 		"token":   token,
+		"user":    user,
 	})
 }
 
 func User(c *fiber.Ctx) error {
-	cookie := c.Cookies("jwt")
-
-	issuer, err := utils.ParseToken(cookie)
+	userID, err := currentUserID(c)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
+		return err
 	}
 
 	var user models.User
-	database.DB.Where("id = ?", issuer).First(&user)
+	database.DB.Where("id = ?", userID).First(&user)
 
 	return c.JSON(user)
 }
@@ -113,8 +121,7 @@ func ForgotPassword(c *fiber.Ctx) error {
 		return err
 	}
 
-	// Just a mock implementation for now
 	return c.JSON(fiber.Map{
-		"message": "Password reset link sent to " + data["email"],
+		"message": "If an account exists for that email, password reset instructions will be sent.",
 	})
 }
