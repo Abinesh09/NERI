@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
-	"log"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/user/neri/database"
@@ -116,7 +114,7 @@ func extractTextFromFile(fileHeader interface{}) (string, error) {
 
 func cleanMarkdownJSON(input string) string {
 	// Basic cleanup for ```json ... ``` tags that LLMs sometimes return
-	input = bytes.ReplaceAll([]byte(input), []byte("```json\n"), []byte(""))
-	input = bytes.ReplaceAll([]byte(input), []byte("\n```"), []byte(""))
-	return string(input)
+	input = strings.ReplaceAll(input, "```json\n", "")
+	input = strings.ReplaceAll(input, "\n```", "")
+	return input
 }
