@@ -5,6 +5,7 @@
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
     "types": ["vite/client"],
+    "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -15,8 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Base URL and paths for shadcn/ui */
-    "baseUrl": ".",
+    /* Paths for shadcn/ui */
     "paths": {
       "@/*": ["./src/*"]
     },

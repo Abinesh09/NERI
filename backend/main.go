@@ -31,10 +31,13 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
+	})
+
 	// Setup routes
 	routes.Setup(app)
 
 	log.Fatal(app.Listen(":8080"))
 }
-
 

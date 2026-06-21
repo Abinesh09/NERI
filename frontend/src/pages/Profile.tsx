@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { motion } from "framer-motion"
-import { BookOpen, Calendar, Clock, RotateCcw, Download, CheckCircle2, ChevronRight, User } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { BookOpen, Calendar, Clock, RotateCcw, Download, CheckCircle2, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function Profile() {
@@ -23,7 +23,7 @@ export default function Profile() {
         </div>
         <div className="text-center md:text-left flex-1">
           <h1 className="text-3xl font-bold mb-2">John Doe</h1>
-          <p className="text-muted-foreground mb-4">john.doe@example.com • Joined Aug 2026</p>
+          <p className="text-muted-foreground mb-4">john.doe@example.com - Joined Aug 2026</p>
           <div className="flex flex-wrap justify-center md:justify-start gap-4">
             <div className="px-4 py-2 bg-secondary/10 text-secondary rounded-xl font-medium flex items-center gap-2">
               <BookOpen className="w-4 h-4" /> 12 Tests Completed
@@ -137,7 +137,7 @@ export default function Profile() {
   )
 }
 
-function File(props: any) {
+function File(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

@@ -27,8 +27,8 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-# Install CA certificates for external API calls (e.g., Gemini)
-RUN apk --no-cache add ca-certificates
+# Install CA certificates for external API calls and timezone data for DB config.
+RUN apk --no-cache add ca-certificates tzdata
 
 # Copy the pre-built binary from builder
 COPY --from=builder /app/main .
